@@ -1,0 +1,40 @@
+# contains the spoof map for the dns spoofing
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-nginx
+spec:
+  engineState: "active"
+  annotationCheck: "false"
+  appinfo:
+    appns: "default"
+    applabel: "name=podtato-main"
+    appkind: "deployment"
+  chaosServiceAccount: pod-dns-spoof-sa
+  experiments:
+    - name: pod-dns-spoof
+      spec:
+        components:
+          env:
+            - name: TARGET_CONTAINER
+              value: ""
+            - name: LIB_IMAGE
+              value: litmuschaos.docker.scarf.sh/litmuschaos/go-runner:3.9.0
+            - name: DEFAULT_HEALTH_CHECK
+              value: "false"
+            - name: TOTAL_CHAOS_DURATION
+              value: "300"
+            - name: RAMP_TIME
+              value: ""
+            - name: PODS_AFFECTED_PERC
+              value: ""
+            - name: TARGET_PODS
+              value: ""
+            - name: CONTAINER_RUNTIME
+              value: containerd
+            - name: SOCKET_PATH
+              value: /run/containerd/containerd.sock
+            - name: SEQUENCE
+              value: parallel
+            - name: SPOOF_MAP
+              value: '{"podtato-left-arm.demo.svc.cluster.local":"podtato-left-arm-v2.demo.svc.cluster.local"}'

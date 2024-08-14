@@ -1,0 +1,52 @@
+## provide the port of the targeted service
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-nginx
+spec:
+  engineState: "active"
+  annotationCheck: "false"
+  appinfo:
+    appns: "default"
+    applabel: "name=podtato-main"
+    appkind: "deployment"
+  chaosServiceAccount: pod-http-chaos-sa
+  experiments:
+    - name: pod-http-modify-header
+      spec:
+        components:
+          env:
+            - name: TARGET_CONTAINER
+              value: ""
+            - name: LIB_IMAGE
+              value: litmuschaos.docker.scarf.sh/litmuschaos/go-runner:3.9.0
+            - name: HEADERS_MAP
+              value: '{"X-Litmus-Test-Header": "X-Litmus-Test-Value"}'
+            - name: HEADER_MODE
+              value: response
+            - name: TARGET_SERVICE_PORT
+              value: "9000"
+            - name: TOXICITY
+              value: "100"
+            - name: PROXY_PORT
+              value: "20000"
+            - name: NETWORK_INTERFACE
+              value: eth0
+            - name: TOTAL_CHAOS_DURATION
+              value: "60"
+            - name: RAMP_TIME
+              value: ""
+            - name: DEFAULT_HEALTH_CHECK
+              value: "false"
+            - name: PODS_AFFECTED_PERC
+              value: ""
+            - name: TARGET_PODS
+              value: ""
+            - name: CONTAINER_RUNTIME
+              value: containerd
+            - name: SOCKET_PATH
+              value: /run/containerd/containerd.sock
+            - name: NODE_LABEL
+              value: ""
+            - name: SEQUENCE
+              value: parallel

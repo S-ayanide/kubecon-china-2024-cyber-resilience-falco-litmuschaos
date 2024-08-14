@@ -1,0 +1,14 @@
+customRules:
+  custom-rules.yaml: |-
+    - rule: Container File Modification - resolv.conf
+      desc: Detect modification of /etc/resolv.conf inside a container
+      condition: container and evt.type in (open, write) and fd.name = /etc/resolv.conf
+      output: "resolv.conf modified inside container (container=%container.name user=%user.name command=%proc.cmdline)"
+      priority: WARNING
+      tags: [filesystem, container, dns]
+    - rule: Container Exec Detected
+      desc: Detect exec into a running container
+      condition: evt.type = execve and container.id != host
+      output: "Exec into container detected (user=%user.name container=%container.name command=%proc.cmdline)"
+      priority: WARNING
+      tags: [container, security]

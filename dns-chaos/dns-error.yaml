@@ -1,0 +1,42 @@
+# contains the target host names for the dns error
+apiVersion: litmuschaos.io/v1alpha1
+kind: ChaosEngine
+metadata:
+  name: engine-nginx
+spec:
+  engineState: "active"
+  annotationCheck: "false"
+  appinfo:
+    appns: "default"
+    applabel: "name=podtato-main"
+    appkind: "deployment"
+  chaosServiceAccount: pod-dns-error-sa
+  experiments:
+    - name: pod-dns-error
+      spec:
+        components:
+          env:
+            - name: TARGET_CONTAINER
+              value: ""
+            - name: LIB_IMAGE
+              value: litmuschaos.docker.scarf.sh/litmuschaos/go-runner:3.9.0
+            - name: DEFAULT_HEALTH_CHECK
+              value: "false"
+            - name: TOTAL_CHAOS_DURATION
+              value: "60"
+            - name: RAMP_TIME
+              value: ""
+            - name: PODS_AFFECTED_PERC
+              value: ""
+            - name: TARGET_PODS
+              value: ""
+            - name: CONTAINER_RUNTIME
+              value: containerd
+            - name: SOCKET_PATH
+              value: /run/containerd/containerd.sock
+            - name: SEQUENCE
+              value: parallel
+            - name: TARGET_HOSTNAMES
+              value: '["podtato-left-arm.demo.svc.cluster.local"]'
+            - name: MATCH_SCHEME
+              value: exact
