@@ -1,14 +1,31 @@
 customRules:
   custom-rules.yaml: |-
-    - rule: Container File Modification - resolv.conf
-      desc: Detect modification of /etc/resolv.conf inside a container
-      condition: container and evt.type in (open, write) and fd.name = /etc/resolv.conf
-      output: "resolv.conf modified inside container (container=%container.name user=%user.name command=%proc.cmdline)"
+    - rule: Detect Access to resolv.conf by Root User
+      desc: Detect access to /etc/resolv.conf only when performed by root user
+      condition: >
+        container and
+        fd.name = /etc/resolv.conf and
+        user.name = "root"
+      output: "[KubeCon] Access to /etc/resolv.conf detected by root user (container=%container.name user=%user.name command=%proc.cmdline)"
       priority: WARNING
-      tags: [filesystem, container, dns]
-    - rule: Container Exec Detected
-      desc: Detect exec into a running container
-      condition: evt.type = execve and container.id != host
-      output: "Exec into container detected (user=%user.name container=%container.name command=%proc.cmdline)"
+      tags: [filesystem, container]
+    - rule: Detect Header Detection in Log File
+      desc: Detects when the specific text "Header X-Litmus-Test-Header detected" is logged
+      condition: >
+        container and
+        fd.name = /tmp/http_header_check.log and
+        evt.type in (open, read, write) and
+        (proc.cmdline contains "cat" or proc.cmdline contains "grep" or proc.cmdline contains "tail")
+      output: "[KubeCon] [HTTP Headers Modify] Detected log entry indicating HTTP header detection (container=%container.name user=%user.name command=%proc.cmdline file=%fd.name)"
       priority: WARNING
-      tags: [container, security]
+      tags: [filesystem, http]
+    - rule: Detect HTTP Body Modification in Log File
+      desc: Detects when the http response body is modified and is logged
+      condition: >
+        container and
+        fd.name = /tmp/http_body_check.log and
+        evt.type in (open, read, write) and
+        (proc.cmdline contains "cat" or proc.cmdline contains "grep" or proc.cmdline contains "tail")
+      output: "[KubeCon] [HTTP Body Modify] Detected log entry indicating HTTP body modifcation (container=%container.name user=%user.name command=%proc.cmdline file=%fd.name)"
+      priority: WARNING
+      tags: [filesystem, http]
