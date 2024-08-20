@@ -12,10 +12,15 @@ Cyber-attacks against cloud-native infrastructure are increasing in frequency an
 
 ### Architecture
 
-TDB
+##### Chaos Injection and detection
+
+![Architecture](./Chaos%20-%20Falco%20Arch.png)
+
+##### Target Application
+
+![Podtato Head](./Podtato%20Head%20Arch.png)
 
 ### Rules Defined
 
 1. DNS Rules
 2. HTTP Rules
-   TDB
